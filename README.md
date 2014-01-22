@@ -197,4 +197,6 @@ $this->widget('EchMultiSelect',...);
  * jQuery UI MultiSelect [Project Page](http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/ "jQuery UI MultiSelect Project Page")
  * jQuery UI MultiSelect [Demo page](http://www.erichynds.com/examples/jquery-ui-multiselect-widget/demos/#filter "jQuery UI MultiSelect Demo Page")
  * jQuery UI MultiSelect [GitHub Page](https://github.com/ehynds/jquery-ui-multiselect-widget "jQuery UI MultiSelect GitHub Page")
+ * EchMultiSelect Widget [Yii Extension Page](http://www.yiiframework.com/extension/echmultiselect/ "EchMultiSelect Yii Extension Page")
  * EchMultiSelect Widget [Forum Page](http://www.yiiframework.com/forum/index.php?/topic/28524-echmultiselect-widget/ "EchMultiSelect Forum Page")
+ * EchMultiSelect Widget [GitHub Page](https://github.com/c-cba/ech-multi-select "EchMultiSelect GitHub Page")
