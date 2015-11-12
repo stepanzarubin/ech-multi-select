@@ -3,6 +3,8 @@
 /**
  * Yii extension wrapping the jQuery UI MultiSelect Widget from Eric Hynds
  * {@link http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/}
+ * {@link http://www.erichynds.com/examples/jquery-ui-multiselect-widget/demos/
+ * {@link http://www.yiiframework.com/extension/echmultiselect/}
  * 
  * @author C.Yildiz <c@cba-solutions.org>
  *
@@ -49,9 +51,6 @@ class EchMultiselect extends CJuiInputWidget
 	 */
 	public $dropDownHtmlOptions = array();
 	
-
-
-
 	public function init()
 	{
 		// Put togehther options for plugin
@@ -78,9 +77,9 @@ class EchMultiselect extends CJuiInputWidget
 		// make sure multiple="multiple" is set for drop down list
 		if($this->options['multiple']) $this->dropDownHtmlOptions['multiple'] = true;
 		
-		$cs = Yii::app()->getClientScript();
+		$cs     = Yii::app()->getClientScript();
 		$assets = Yii::app()->getAssetManager()->publish(dirname(__FILE__) . '/assets');
-		$cs->registerScriptFile($assets . '/jquery.ui.widget.min.js');
+		$cs->registerCoreScript('jquery.ui');
 		$cs->registerScriptFile($assets . '/jquery.multiselect.js');
 		$cs->registerCssFile($assets . '/jquery.multiselect.css');
 		if($this->options['filter'] === true) {
@@ -122,7 +121,15 @@ class EchMultiselect extends CJuiInputWidget
 			
 		// start - by jeremy@Yii
 		if ($this->options['ajaxRefresh']==true)
-			$jscode .= "jQuery('body').ajaxComplete(function() {jQuery('#".$id."').multiselect(".$joptions."); });";
+        {
+            $jscode .= "jQuery(document).ajaxComplete(function() {
+                var el=jQuery('#".$id."').multiselect(".$joptions.");
+                if(el.multiselect('isOpen'))
+                {
+                    el.multiselect('open');
+                }
+            });";
+        }
 		// end - by jeremy@Yii
 		Yii::app()->getClientScript()->registerScript(__CLASS__ . '#' . $id, $jscode);
 	}
