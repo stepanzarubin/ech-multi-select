@@ -186,7 +186,7 @@ $this->widget('EchMultiSelect',...);
    * fixed `destroy` function, added comments
    * reworked `ui-multiselect-menu` so that each menu has its identifier and will be created only once (items will continue populate dynamically)
    * `delegate` replaced with `on`
-   * checked filter `[checked]` replaced with ':checked'
+   * checked filter `[checked]` replaced with `:checked`
    * removed effects
 * **Dec 17, 2012** (v1.3)
    * Added the changes suggested by jeremy in the comments, to make this widget work as a 'filter' in CGridView (added the `ajaxRefresh` and `buttonWidth` options). Thanks to [jeremy](http://www.yiiframework.com/user/1627/ "jeremy") for providing the code!
