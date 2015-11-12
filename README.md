@@ -181,6 +181,13 @@ $this->widget('EchMultiSelect',...);
 ```
 
 ##Changes
+* **Nov 12, 2015** (v1.3) - Making it work with latest JQuery versions e.g. 1.11
+   * fixed `ajaxRefresh=true`
+   * fixed `destroy` function, added comments
+   * reworked `ui-multiselect-menu` so that each menu has its identifier and will be created only once (items will continue populate dynamically)
+   * `delegate` replaced with `on`
+   * checked filter `[checked]` replaced with ':checked'
+   * removed effects
 * **Dec 17, 2012** (v1.3)
    * Added the changes suggested by jeremy in the comments, to make this widget work as a 'filter' in CGridView (added the `ajaxRefresh` and `buttonWidth` options). Thanks to [jeremy](http://www.yiiframework.com/user/1627/ "jeremy") for providing the code!
    * Added translation files. You can add your own translations to the folder `EchMultiSelect/messages`.
