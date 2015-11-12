@@ -189,6 +189,7 @@ $this->widget('EchMultiSelect',...);
    * checked filter `[checked]` replaced with `:checked`
    * removed effects
    * `jquery.multiselect.filter.js` WAS NOT TOUCHED AND CHECKED except for `destroy` rename
+   * `jquery.ui.widget.min.js` removed in favor of core `jquery.ui`
 * **Dec 17, 2012** (v1.3)
    * Added the changes suggested by jeremy in the comments, to make this widget work as a 'filter' in CGridView (added the `ajaxRefresh` and `buttonWidth` options). Thanks to [jeremy](http://www.yiiframework.com/user/1627/ "jeremy") for providing the code!
    * Added translation files. You can add your own translations to the folder `EchMultiSelect/messages`.
