@@ -10,7 +10,6 @@
  *   - jQuery UI 1.8 widget factory
  *
  * Optional:
- *   - jQuery UI effects
  *   - jQuery UI position utility
  *
  * Dual licensed under the MIT and GPL licenses:
@@ -36,8 +35,6 @@ $.widget("ech.multiselect", {
 		noneSelectedText: 'Select options',
 		selectedText: '# selected',
 		selectedList: 0,
-		show: '',
-		hide: '',
 		autoOpen: false,
 		multiple: true,
 		position: {}
@@ -47,10 +44,57 @@ $.widget("ech.multiselect", {
 		var el = this.element.hide(),
 			o = this.options;
 		
-		this.speed = $.fx.speeds._default; // default speed for effects
 		this._isOpen = false; // assume no
-		
-		var 
+
+        var menu, header, headerLinkContainer, checkboxContainer;
+        var menuID = 'ui-multiselect-menu-'+el.attr('id');
+
+        menu = this.menu = $('div#'+menuID);
+        if (!menu.length)
+        {
+            //creating new menu
+            menu = (this.menu = $('<div />'))
+                .attr('id',menuID)
+				.addClass('ui-multiselect-menu ui-widget ui-widget-content ui-corner-all')
+				.addClass( o.classes )
+				.appendTo( document.body );
+
+            header = (this.header = $('<div />'))
+				.addClass('ui-widget-header ui-corner-all ui-multiselect-header ui-helper-clearfix')
+				.appendTo( menu );
+
+            headerLinkContainer = (this.headerLinkContainer = $('<ul />'))
+                .addClass('ui-helper-reset')
+                .html(function(){
+                    if( o.header === true ){
+                        return '<li><a class="ui-multiselect-all" href="#"><span class="ui-icon ui-icon-check"></span><span>' + o.checkAllText + '</span></a></li><li><a class="ui-multiselect-none" href="#"><span class="ui-icon ui-icon-closethick"></span><span>' + o.uncheckAllText + '</span></a></li>';
+                    } else if(typeof o.header === "string"){
+                        return '<li>' + o.header + '</li>';
+                    } else {
+                        return '';
+                    }
+                })
+                .append('<li class="ui-multiselect-close"><a href="#" class="ui-multiselect-close"><span class="ui-icon ui-icon-circle-close"></span></a></li>')
+                .appendTo( header );
+
+            checkboxContainer = (this.checkboxContainer = $('<ul />'))
+                .addClass('ui-multiselect-checkboxes ui-helper-reset')
+                .appendTo( menu );
+
+            // some addl. logic for single selects
+            if( !o.multiple ){
+                menu.addClass('ui-multiselect-single');
+            }
+        }
+        else
+        {
+            //get existing menu
+            header              = this.header              = menu.  find('div.ui-widget-header');
+            headerLinkContainer = this.headerLinkContainer = header.find('ul.ui-helper-reset');
+            checkboxContainer   = this.checkboxContainer   = menu.  find('ul.ui-multiselect-checkboxes');
+        }
+
+		var
 			button = (this.button = $('<button type="button"><span class="ui-icon ui-icon-triangle-2-n-s"></span></button>'))
 				.addClass('ui-multiselect ui-widget ui-state-default ui-corner-all')
 				.addClass( o.classes )
@@ -59,45 +103,13 @@ $.widget("ech.multiselect", {
 			
 			buttonlabel = (this.buttonlabel = $('<span />'))
 				.html( o.noneSelectedText )
-				.appendTo( button ),
+				.appendTo( button );
 				
-			menu = (this.menu = $('<div />'))
-				.addClass('ui-multiselect-menu ui-widget ui-widget-content ui-corner-all')
-				.addClass( o.classes )
-				.appendTo( document.body ),
-				
-			header = (this.header = $('<div />'))
-				.addClass('ui-widget-header ui-corner-all ui-multiselect-header ui-helper-clearfix')
-				.appendTo( menu ),
-				
-			headerLinkContainer = (this.headerLinkContainer = $('<ul />'))
-				.addClass('ui-helper-reset')
-				.html(function(){
-					if( o.header === true ){
-						return '<li><a class="ui-multiselect-all" href="#"><span class="ui-icon ui-icon-check"></span><span>' + o.checkAllText + '</span></a></li><li><a class="ui-multiselect-none" href="#"><span class="ui-icon ui-icon-closethick"></span><span>' + o.uncheckAllText + '</span></a></li>';
-					} else if(typeof o.header === "string"){
-						return '<li>' + o.header + '</li>';
-					} else {
-						return '';
-					}
-				})
-				.append('<li class="ui-multiselect-close"><a href="#" class="ui-multiselect-close"><span class="ui-icon ui-icon-circle-close"></span></a></li>')
-				.appendTo( header ),
-			
-			checkboxContainer = (this.checkboxContainer = $('<ul />'))
-				.addClass('ui-multiselect-checkboxes ui-helper-reset')
-				.appendTo( menu );
-		
 		// perform event bindings
 		this._bindEvents();
 		
 		// build menu
 		this.refresh( true );
-		
-		// some addl. logic for single selects
-		if( !o.multiple ){
-			menu.addClass('ui-multiselect-single');
-		}
 	},
 	
 	_init: function(){
@@ -114,9 +126,7 @@ $.widget("ech.multiselect", {
 			this.disable();
 		}
 	},
-	
 
-	
 	refresh: function( init ){
 		var el = this.element,
 			o = this.options,
@@ -187,6 +197,8 @@ $.widget("ech.multiselect", {
 
 		// cache some moar useful elements
 		this.labels = menu.find('label');
+
+        //alert(this.labels.length);
 		
 		// set widths
 		this._setButtonWidth();
@@ -205,10 +217,12 @@ $.widget("ech.multiselect", {
 	update: function(){
 		var o = this.options,
 			$inputs = this.labels.find('input'),
-			$checked = $inputs.filter('[checked]'),
+			$checked = $inputs.filter(':checked'),
 			numChecked = $checked.length,
 			value;
-		
+
+        //alert($checked.length);
+
 		if( numChecked === 0 ){
 			value = o.noneSelectedText;
 		} else {
@@ -275,7 +289,7 @@ $.widget("ech.multiselect", {
 
 		// header links
 		this.header
-			.delegate('a', 'click.multiselect', function( e ){
+			.on('click.multiselect', 'a', function( e ){
 				// close link
 				if( $(this).hasClass('ui-multiselect-close') ){
 					self.close();
@@ -290,7 +304,7 @@ $.widget("ech.multiselect", {
 		
 		// optgroup label toggle support
 		this.menu
-			.delegate('li.ui-multiselect-optgroup-label a', 'click.multiselect', function( e ){
+			.on('click.multiselect', 'li.ui-multiselect-optgroup-label a', function( e ){
 				e.preventDefault();
 				
 				var $this = $(this),
@@ -305,7 +319,7 @@ $.widget("ech.multiselect", {
 				
 				// toggle inputs
 				self._toggleChecked(
-					$inputs.filter('[checked]').length !== $inputs.length,
+					$inputs.filter(':checked').length !== $inputs.length,
 					$inputs
 				);
 
@@ -315,13 +329,13 @@ $.widget("ech.multiselect", {
 				    checked: nodes[0].checked
 				});
 			})
-			.delegate('label', 'mouseenter.multiselect', function(){
+			.on('mouseenter.multiselect', 'label', function(){
 				if( !$(this).hasClass('ui-state-disabled') ){
 					self.labels.removeClass('ui-state-hover');
 					$(this).addClass('ui-state-hover').find('input').focus();
 				}
 			})
-			.delegate('label', 'keydown.multiselect', function( e ){
+			.on('keydown.multiselect', 'label', function( e ){
 				e.preventDefault();
 				
 				switch(e.which){
@@ -340,7 +354,7 @@ $.widget("ech.multiselect", {
 						break;
 				}
 			})
-			.delegate('input[type="checkbox"], input[type="radio"]', 'click.multiselect', function( e ){
+			.on('click.multiselect', 'input[type="checkbox"], input[type="radio"]', function( e ){
 				var $this = $(this),
 					val = this.value,
 					checked = this.checked,
@@ -379,7 +393,7 @@ $.widget("ech.multiselect", {
 
 				// fire change on the select box
 				self.element.trigger("change");
-				
+
 				// setTimeout is to fix multiselect issue #14 and #47. caused by jQuery issue #3827
 				// http://bugs.jquery.com/ticket/3827 
 				setTimeout($.proxy(self.update, self), 10);
@@ -534,23 +548,15 @@ $.widget("ech.multiselect", {
 		var self = this,
 			button = this.button,
 			menu = this.menu,
-			speed = this.speed,
 			o = this.options;
-		
+
 		// bail if the multiselectopen event returns false, this widget is disabled, or is already open 
 		if( this._trigger('beforeopen') === false || button.hasClass('ui-state-disabled') || this._isOpen ){
 			return;
 		}
 		
 		var $container = menu.find('ul').last(),
-			effect = o.show,
 			pos = button.offset();
-		
-		// figure out opening effects/speeds
-		if( $.isArray(o.show) ){
-			effect = o.show[0];
-			speed = o.show[1] || self.speed;
-		}
 		
 		// set the scroll of the checkbox container
 		$container.scrollTop(0).height(o.height);
@@ -563,14 +569,14 @@ $.widget("ech.multiselect", {
 				.show()
 				.position( o.position )
 				.hide()
-				.show( effect, speed );
+				.show();
 		
 		// if position utility is not available...
 		} else {
 			menu.css({ 
 				top: pos.top + button.outerHeight(),
 				left: pos.left
-			}).show( effect, speed );
+			}).show();
 		}
 		
 		// select the first option
@@ -588,16 +594,9 @@ $.widget("ech.multiselect", {
 		if(this._trigger('beforeclose') === false){
 			return;
 		}
-	
-		var o = this.options, effect = o.hide, speed = this.speed;
-		
-		// figure out opening effects/speeds
-		if( $.isArray(o.hide) ){
-			effect = o.hide[0];
-			speed = o.hide[1] || this.speed;
-		}
-	
-		this.menu.hide(effect, speed);
+		var o = this.options;
+
+		this.menu.hide();
 		this.button.removeClass('ui-state-active').trigger('blur').trigger('mouseleave');
 		this._isOpen = false;
 		this._trigger('close');
@@ -622,17 +621,20 @@ $.widget("ech.multiselect", {
 	},
 	
 	getChecked: function(){
-		return this.menu.find('input').filter('[checked]');
+		return this.menu.find('input').filter(':checked');
 	},
 	
-	destroy: function(){
+	_destroy: function() {
+        this.button.remove();
+        //I believe this should be called before destroying widget otherwise elements are not removed
+        //keeping menu open to be able reuse it, otherwise after ajax update menu will be closed, but we want to see what we are filtering
+		//this.menu.remove();
+
 		// remove classes + data
 		$.Widget.prototype.destroy.call( this );
-		
-		this.button.remove();
-		this.menu.remove();
+
+        //this should show original drop-down, use if you need
 		this.element.show();
-		
 		return this;
 	},
 	
