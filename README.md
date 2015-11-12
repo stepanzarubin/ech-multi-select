@@ -1,4 +1,4 @@
-Yii EchMultiSelect Widget
+Yii EchMultiSelect Widget + latest JQuery support
 ==============================
 
 _EchMultiSelect_ is a simple Wrapper Widget for the jQuery UI MultiSelect Widget by Eric Hynds.
